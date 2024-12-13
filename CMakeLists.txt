@@ -23,8 +23,8 @@ add_executable(touch_keyboard_handler
 
 include(GNUInstallDirs)
 
-set(SYSTEMD_UNIT_DIR "/lib/systemd/system/")
-set(UDEV_DIR "/lib/udev/")
+set(SYSTEMD_UNIT_DIR "${CMAKE_INSTALL_LIBDIR}/systemd/system/")
+set(UDEV_DIR "${CMAKE_INSTALL_LIBDIR}/udev/")
 
 install(TARGETS touch_keyboard_handler
 	DESTINATION sbin)
@@ -43,4 +43,3 @@ install(FILES 61-evdev-yogabook.hwdb
 
 install(FILES touch-keyboard-handler.service
 	DESTINATION ${SYSTEMD_UNIT_DIR})
-
