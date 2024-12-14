@@ -31,7 +31,7 @@ FakeKeyboard::FakeKeyboard(struct hw_config &hw_config) :
 
   fn_key_pressed_ = false;
 
-  LoadLayout("layout.csv");
+  LoadLayout("layouts/YB1-X9x-pc104.csv");
 
   ff_manager_ = new TouchFFManager(hw_config_.res_x, hw_config_.res_y,
       hw_config_.rotation);
