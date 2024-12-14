@@ -43,7 +43,7 @@ bool FakeKeyboard::LoadLayout(std::string const &layout_filename) {
   hw_pitch_x = hw_config_.res_x / hw_config_.width_mm;
   hw_pitch_y = hw_config_.res_y / hw_config_.height_mm;
 
-  LOG(DEBUG) << "pitch: " << hw_pitch_x << "x" << hw_pitch_y << "\n";
+  LOG(DEBUG) << "|kb| pitch: " << hw_pitch_x << "x" << hw_pitch_y << "\n";
 
   io::CSVReader<8,
     io::trim_chars<' ', '\t'>,
@@ -63,7 +63,7 @@ bool FakeKeyboard::LoadLayout(std::string const &layout_filename) {
   top_margin = hw_config_.top_margin_mm;
 
   while(l_csv.read_row(x, y, w, h, keyname, keycode, keyname_fn, keycode_fn)) {
-    LOG(DEBUG) << "Key " << keyname << "(" << keycode << ") | " <<
+    LOG(DEBUG) << "|kb| Key " << keyname << "(" << keycode << ") | " <<
       keyname_fn << " (" << keycode_fn << "): " <<
       w << "x" << h << "@(" << x << "," << y << ") mm\n";
 
@@ -95,11 +95,11 @@ bool FakeKeyboard::LoadLayout(std::string const &layout_filename) {
         y2 = (left_margin + x + w) * hw_pitch_y;
         break;
       default:
-        LOG(ERROR) << "Rotation by " << hw_config_.rotation << " degrees is not supported\n";
+        LOG(ERROR) << "|kb| Rotation by " << hw_config_.rotation << " degrees is not supported\n";
         return false;
     }
 
-    LOG(DEBUG) << "HW coords: (" << x1 << ", " << y1 << "), (" <<
+    LOG(DEBUG) << "|kb| HW coords: (" << x1 << ", " << y1 << "), (" <<
       x2 << ", " << y2 << ")\n";
 
     layout_.push_back(Key(keycode, keycode_fn, x1, x2, y1, y2));
@@ -148,7 +148,7 @@ int FakeKeyboard::GenerateEventForArrivingFinger(
       else
         *event_code = layout_[key_num].event_code_;
 
-      LOG(DEBUG) << "fn_key_pressed_: " << fn_key_pressed_ << ", event_code: " <<
+      LOG(DEBUG) << "|kb| fn_key_pressed_: " << fn_key_pressed_ << ", event_code: " <<
         *event_code << "\n";
 
       Event ev(*event_code, kKeyDownEvent,
@@ -214,7 +214,7 @@ bool FakeKeyboard::StillOnFirstKey(
 }
 
 void FakeKeyboard::RejectFinger(int tid, RejectionStatus reason) {
-  LOG(DEBUG) << "Reject finger, reason " << static_cast<int>(reason) << "\n";
+  LOG(DEBUG) << "|kb| Reject finger, reason " << static_cast<int>(reason) << "\n";
   // First, mark the finger's FingerData as rejected.
   finger_data_[tid].rejection_status_ = reason;
 
@@ -345,7 +345,7 @@ void FakeKeyboard::Consume() {
                     (deadline.tv_nsec - now.tv_nsec) / 1000000);
       timeout_ms++;  // Always add 1 more ms so as to not undershoot.
       if (timeout_ms < 0) {
-        LOG(WARNING) << "Negative timeout (" << timeout_ms <<
+        LOG(WARNING) << "|kb| Negative timeout (" << timeout_ms <<
                         ").  We missed an event somewhere!\n";
         timeout_ms = 1;
       }
@@ -397,7 +397,7 @@ void FakeKeyboard::Consume() {
           if (it->second.max_pressure_ < kMinTapPressure ||
               (layout_[it->second.starting_key_number_].event_code_ !=
                KEY_SPACE && it->second.max_pressure_ > kMaxTapPressure)) {
-            LOG(INFO) << "Tap rejected!  Pressure of " <<
+            LOG(INFO) << "|kb| Tap rejected!  Pressure of " <<
               it->second.max_pressure_ << " is out of range " <<
               kMinTapPressure << "->" << kMaxTapPressure << "\n";
             continue;
@@ -406,7 +406,7 @@ void FakeKeyboard::Consume() {
           if (it->second.max_touch_major_ < kMinTapTouchDiameter ||
             (layout_[it->second.starting_key_number_].event_code_ !=
              KEY_SPACE && it->second.max_touch_major_ > kMaxTapTouchDiameter)) {
-            LOG(INFO) << "Tap rejected!  Diameter of " <<
+            LOG(INFO) << "|kb| Tap rejected!  Diameter of " <<
               it->second.max_touch_major_ << " is out of range " <<
               kMinTapTouchDiameter << "->" << kMaxTapTouchDiameter << "\n";
             continue;
@@ -417,14 +417,14 @@ void FakeKeyboard::Consume() {
         // The finger has already left -- that's OK as long as it is
         // "guaranteed" to fire.
         if (!next_event.is_guaranteed_) {
-          LOG(ERROR) << "No finger data for event that should have some! " <<
+          LOG(ERROR) << "|kb| No finger data for event that should have some! " <<
                        "(guaranteed: " << next_event.is_guaranteed_ << ", " <<
                        "is_down: " << next_event.is_down_ << ", " <<
                        "tid: " << next_event.tid_ << ")\n";
         }
       }
 
-      LOG(DEBUG) << "Event: EV_KEY, code " << next_event.ev_code_ << " down: " << next_event.is_down_ << "\n";
+      LOG(DEBUG) << "|kb| Event: EV_KEY, code " << next_event.ev_code_ << " down: " << next_event.is_down_ << "\n";
       // Actually send the event and update the fingerdata if applicable.
       SendEvent(EV_KEY, next_event.ev_code_, next_event.is_down_ ? 1 : 0);
       needs_syn = true;

@@ -30,7 +30,7 @@ bool FakeTouchpad::LoadLayout(std::string const &layout_filename) {
   hw_pitch_x = hw_config_.res_x / hw_config_.width_mm;
   hw_pitch_y = hw_config_.res_y / hw_config_.height_mm;
 
-  LOG(DEBUG) << "pitch: " << hw_pitch_x << "x" << hw_pitch_y << "\n";
+  LOG(DEBUG) << "|tp| pitch: " << hw_pitch_x << "x" << hw_pitch_y << "\n";
 
   io::CSVReader<4,
     io::trim_chars<' ', '\t'>,
@@ -39,11 +39,11 @@ bool FakeTouchpad::LoadLayout(std::string const &layout_filename) {
   l_csv.read_header(io::ignore_missing_column, "x1", "y1", "x2", "y2");
 
   if (!l_csv.read_row(xmin_mm, ymin_mm, xmax_mm, ymax_mm)) {
-      LOG(ERROR) << "CSV read failed";
+      LOG(ERROR) << "|tp| CSV read failed";
       return false;
   }
 
-  LOG(DEBUG) << "x1: " << xmin_mm << ", y1: " << ymin_mm << ", x2: " << xmax_mm <<
+  LOG(DEBUG) << "|tp| x1: " << xmin_mm << ", y1: " << ymin_mm << ", x2: " << xmax_mm <<
     ", y2:" << ymax_mm;
 
   left_margin = hw_config_.left_margin_mm;
@@ -78,7 +78,7 @@ bool FakeTouchpad::LoadLayout(std::string const &layout_filename) {
       ymax_ = left_margin + xmax_mm;
       break;
     default:
-      LOG(ERROR) << "Invalid rotation value: " << hw_config_.rotation << "\n";
+      LOG(ERROR) << "|tp| Invalid rotation value: " << hw_config_.rotation << "\n";
       throw;
   }
 
@@ -87,7 +87,7 @@ bool FakeTouchpad::LoadLayout(std::string const &layout_filename) {
   ymin_ *= hw_pitch_y;
   ymax_ *= hw_pitch_y;
 
-  LOG(INFO) << "FakeTouchpad geometry: (" << xmin_ << ", " << xmax_ <<
+  LOG(INFO) << "|tp| FakeTouchpad geometry: (" << xmin_ << ", " << xmax_ <<
                                     "), (" << ymin_ << ", " << ymax_ << ")\n";
 
   return true;

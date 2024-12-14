@@ -96,12 +96,19 @@ int main(int argc, char *argv[]) {
       FakeTouchpad tp(hw_config);
       tp.Start(kTouchSensorDevicePath, "virtual-touchpad");
     } else {
+      LOG(INFO) << "Creating Fake Keyboard.\n";
       FakeKeyboard kbd(hw_config);
       kbd.Start(kTouchSensorDevicePath, "virtual-keyboard");
       wait(NULL);
     }
   } catch (...) {
-    LOG(ERROR) << "Exception occured";
+    if (pid < 0) {
+      LOG(ERROR) << "Exception occured.\n";
+    } else if (pid == 0) {
+      LOG(ERROR) << "Exception occured in Fake Touchpad.\n";
+    } else {
+      LOG(ERROR) << "Exception occured in Fake Keyboard.\n";
+    }
     exit(EXIT_FAILURE);
   }
 
